@@ -2132,6 +2132,9 @@ document.addEventListener('visibilitychange', () => {
 });
 window.addEventListener('resize', syncCanvasResolution);
 
+// The numerical workshop is a separate designer tool. Normal players never see its entry.
+$('#designLabLink').hidden = new URLSearchParams(window.location.search).get('design') !== '1';
+
 syncCanvasResolution();
 setupLevel();
 showOverlay('ready');

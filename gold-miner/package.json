@@ -7,7 +7,9 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --test --test-isolation=none tests/*.test.js"
+    "test": "node --test --test-isolation=none tests/*.test.js",
+    "test:browser": "node tests/browser-smoke.mjs && node tests/design-browser.mjs",
+    "test:browser:design": "node tests/design-browser.mjs"
   },
   "devDependencies": {
     "vite": "^7.3.8"
