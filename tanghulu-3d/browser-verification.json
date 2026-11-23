@@ -1,0 +1,25 @@
+{
+  "checks": {
+    "strawberryTipsUp": true,
+    "modelHasMeshes": true,
+    "canvasHasSize": true,
+    "autoRotateToggle": true,
+    "explodeView": true,
+    "ingredientFocus": true,
+    "labelToggle": true,
+    "referenceDialog": true,
+    "resetView": true,
+    "noRuntimeExceptions": true,
+    "noConsoleErrors": true
+  },
+  "initial": {
+    "orientation": "tips-up",
+    "meshes": 33,
+    "canvas": [
+      1440,
+      1000
+    ]
+  },
+  "exceptions": [],
+  "consoleErrors": []
+}

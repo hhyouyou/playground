@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加湿器维护 · 三套亮色视觉方案</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root { font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; color: #17211f; }
+    body { margin: 0; background: #f5f7f7; }
+    button { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .icon { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .preview-toolbar {
+      position: sticky; top: 0; z-index: 100; min-height: 74px; padding: 12px 28px;
+      display: flex; align-items: center; justify-content: space-between; gap: 22px;
+      background: rgba(255,255,255,.94); border-bottom: 1px solid #e4e9e8;
+      backdrop-filter: blur(18px); box-shadow: 0 3px 18px rgba(33,50,47,.04);
+    }
+    .preview-brand { display: flex; align-items: center; gap: 11px; white-space: nowrap; }
+    .preview-brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px; color: #fff; background: #17211f; }
+    .preview-brand strong { display: block; font-size: 14px; }
+    .preview-brand small { display: block; color: #83908d; font-size: 11px; margin-top: 1px; }
+    .preview-tabs { display: flex; gap: 7px; padding: 5px; border-radius: 14px; background: #f0f3f2; }
+    .preview-tab { border: 0; background: transparent; color: #687572; padding: 9px 15px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 650; white-space: nowrap; transition: .18s ease; }
+    .preview-tab:hover { color: #17211f; }
+    .preview-tab.active { background: #fff; color: #17211f; box-shadow: 0 3px 10px rgba(35,51,48,.09); }
+    .preview-note { color: #8a9693; font-size: 12px; white-space: nowrap; }
+    .scene { display: none; min-height: calc(100vh - 74px); }
+    .scene.active { display: block; }
+    .demo-button { cursor: pointer; }
+    .toast { position: fixed; z-index: 200; right: 24px; bottom: 24px; padding: 12px 17px; border-radius: 12px; background: #17211f; color: white; font-size: 13px; box-shadow: 0 12px 32px rgba(0,0,0,.18); opacity: 0; transform: translateY(10px); pointer-events: none; transition: .2s ease; }
+    .toast.show { opacity: 1; transform: none; }
+
+    /* 方案一：清新智能家居 */
+    .scene-home { background: radial-gradient(circle at 8% 0%, #e1f5ee 0, transparent 30%), radial-gradient(circle at 94% 24%, #fff1d9 0, transparent 25%), #f5f8f6; }
+    .home-wrap { max-width: 1200px; margin: 0 auto; padding: 28px 30px 40px; }
+    .home-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .home-brand { display: flex; align-items: center; gap: 12px; }
+    .home-logo { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 15px; background: #fff; color: #188a75; box-shadow: 0 7px 22px rgba(43,88,77,.08); }
+    .home-brand strong { font-size: 17px; letter-spacing: -.02em; }
+    .home-brand small { display: block; margin-top: 1px; color: #80918b; font-size: 11px; }
+    .home-date { padding: 9px 14px; border-radius: 12px; background: rgba(255,255,255,.76); border: 1px solid rgba(255,255,255,.9); color: #667973; font-size: 12px; }
+    .home-hero { position: relative; overflow: hidden; display: grid; grid-template-columns: 1.45fr .75fr; min-height: 218px; border-radius: 28px; background: linear-gradient(120deg, #dff4ec 0%, #eaf7ef 52%, #fff1d9 120%); box-shadow: 0 16px 42px rgba(49,91,78,.08); }
+    .home-hero::after { content: ""; position: absolute; width: 280px; height: 280px; right: -100px; top: -150px; border: 1px solid rgba(40,143,117,.13); border-radius: 50%; box-shadow: 0 0 0 38px rgba(255,255,255,.13), 0 0 0 76px rgba(255,255,255,.1); }
+    .home-hero-copy { padding: 32px 36px; position: relative; z-index: 2; }
+    .home-eyebrow { display: inline-flex; align-items: center; gap: 6px; color: #29836f; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+    .home-hero h1 { margin: 10px 0 7px; font-size: 31px; line-height: 1.25; letter-spacing: -.04em; color: #173d34; }
+    .home-hero p { margin: 0; color: #5f7a71; font-size: 14px; }
+    .home-hero p strong { color: #d76550; }
+    .home-actions { display: flex; gap: 10px; margin-top: 23px; }
+    .home-primary { border: 0; border-radius: 12px; padding: 11px 17px; color: #fff; background: #187c68; box-shadow: 0 8px 18px rgba(24,124,104,.2); font-size: 13px; font-weight: 700; }
+    .home-secondary { border: 1px solid rgba(40,112,95,.16); border-radius: 12px; padding: 11px 17px; color: #3b6e61; background: rgba(255,255,255,.55); font-size: 13px; font-weight: 650; }
+    .home-hero-art { position: relative; display: grid; place-items: center; min-height: 200px; z-index: 1; }
+    .humidifier-art { width: 195px; height: 190px; filter: drop-shadow(0 16px 15px rgba(44,95,81,.12)); }
+    .hero-status { position: absolute; right: 25px; bottom: 24px; padding: 9px 13px; border-radius: 13px; background: rgba(255,255,255,.9); box-shadow: 0 8px 24px rgba(54,86,78,.1); color: #496b61; font-size: 11px; }
+    .hero-status strong { color: #d76550; font-size: 16px; margin-right: 3px; }
+    .home-section-head { display: flex; align-items: end; justify-content: space-between; margin: 27px 2px 14px; }
+    .home-section-head h2 { margin: 0; font-size: 17px; letter-spacing: -.02em; }
+    .home-section-head span { color: #899690; font-size: 12px; }
+    .home-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 15px; }
+    .home-card { padding: 19px; border: 1px solid rgba(224,234,230,.85); border-radius: 21px; background: rgba(255,255,255,.94); box-shadow: 0 8px 26px rgba(42,76,66,.055); transition: transform .18s ease, box-shadow .18s ease; }
+    .home-card:hover { transform: translateY(-3px); box-shadow: 0 13px 30px rgba(42,76,66,.09); }
+    .home-card.urgent { border-color: #f0cfc6; background: linear-gradient(155deg, #fff 45%, #fff6f2); }
+    .home-card-top { display: flex; justify-content: space-between; align-items: center; }
+    .home-task-icon { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; color: #278a76; background: #e9f6f1; }
+    .home-card:nth-child(2) .home-task-icon { color: #4787b7; background: #edf6fb; }
+    .home-card:nth-child(3) .home-task-icon { color: #a67b2d; background: #fff6e5; }
+    .home-card:nth-child(4) .home-task-icon { color: #8870b3; background: #f4f0fb; }
+    .home-card.urgent .home-task-icon { color: #d66c55; background: #fff0eb; }
+    .home-badge { padding: 4px 8px; border-radius: 999px; background: #eff5f2; color: #6c837b; font-size: 10px; font-weight: 700; }
+    .home-badge.due { background: #ffede7; color: #cf624c; }
+    .home-card h3 { margin: 15px 0 1px; font-size: 14px; }
+    .home-last { color: #94a09c; font-size: 10px; }
+    .home-count { margin-top: 14px; color: #193b33; font-size: 27px; font-weight: 760; line-height: 1.1; letter-spacing: -.04em; }
+    .home-count small { font-size: 12px; font-weight: 500; color: #81918b; letter-spacing: 0; margin-left: 4px; }
+    .home-card.urgent .home-count { color: #ce624d; font-size: 24px; }
+    .home-progress { height: 5px; margin: 13px 0 16px; overflow: hidden; border-radius: 99px; background: #edf1ef; }
+    .home-progress span { display: block; height: 100%; border-radius: inherit; background: #5ab29e; }
+    .home-card.urgent .home-progress span { background: #e98974; }
+    .home-record { width: 100%; border: 0; border-radius: 10px; padding: 9px 10px; background: #eef6f3; color: #257561; font-size: 11px; font-weight: 700; }
+    .home-card.urgent .home-record { background: #dc725b; color: white; }
+    .home-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 17px; padding: 16px 20px; border-radius: 18px; background: rgba(255,255,255,.7); color: #76877f; font-size: 11px; }
+    .home-bottom strong { color: #385a50; }
+    .home-dots { display: flex; gap: 5px; }
+    .home-dots i { width: 7px; height: 7px; border-radius: 50%; background: #c8d8d2; }
+    .home-dots i.done { background: #64b5a2; }
+
+    /* 方案一扩展：维护日历 */
+    .home-calendar-section { margin-top: 27px; }
+    .home-calendar-layout { display: grid; grid-template-columns: minmax(0,1.65fr) minmax(275px,.75fr); gap: 15px; align-items: start; }
+    .home-calendar-card, .home-selected-card, .home-upcoming-card { border: 1px solid rgba(220,232,227,.9); border-radius: 22px; background: rgba(255,255,255,.95); box-shadow: 0 8px 26px rgba(42,76,66,.05); }
+    .home-calendar-card { padding: 20px 22px; }
+    .home-calendar-head { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 17px; }
+    .home-calendar-title strong { display: block; color: #21483e; font-size: 15px; }
+    .home-calendar-title span { color: #94a19b; font-size: 10px; }
+    .home-calendar-controls { display: flex; align-items: center; gap: 6px; }
+    .home-calendar-controls button { border: 0; border-radius: 9px; background: #eff6f3; color: #4d7d70; cursor: pointer; font-size: 11px; font-weight: 700; }
+    .home-cal-nav { width: 30px; height: 30px; padding: 0; font-size: 17px !important; line-height: 1; }
+    .home-cal-today { height: 30px; padding: 0 10px; }
+    .home-cal-weekdays, .home-calendar-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 5px; }
+    .home-cal-weekdays { margin-bottom: 6px; }
+    .home-cal-weekdays span { padding: 4px 0; color: #9aa7a2; text-align: center; font-size: 9px; }
+    .home-cal-day { min-width: 0; min-height: 66px; padding: 7px 6px 5px; border: 1px solid transparent; border-radius: 11px; background: #fafcfa; color: #48665d; cursor: pointer; text-align: left; transition: border-color .15s ease, background .15s ease; }
+    .home-cal-day:hover { border-color: #b8d8ce; background: #f4faf7; }
+    .home-cal-day.outside { opacity: .35; }
+    .home-cal-day.today { border-color: #63ad9a; }
+    .home-cal-day.selected { border-color: #63ad9a; background: #e9f5f0; box-shadow: inset 0 0 0 1px rgba(70,151,130,.08); }
+    .home-cal-number { display: block; margin-bottom: 5px; font-size: 10px; font-weight: 650; }
+    .home-cal-day.today .home-cal-number { color: #16816b; }
+    .home-cal-events { display: grid; gap: 3px; }
+    .home-cal-event { display: block; overflow: hidden; padding: 2px 4px; border-radius: 4px; background: #eef4f1; color: #658078; font-size: 7px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .home-cal-event.done { background: #e4f3ec; color: #438d73; }
+    .home-cal-event.due { background: #ffede7; color: #ce684f; }
+    .home-cal-event.replace { background: #f1ebf8; color: #8a71aa; }
+    .home-calendar-legend { display: flex; gap: 15px; margin-top: 14px; color: #93a19b; font-size: 9px; }
+    .home-calendar-legend span { display: flex; align-items: center; gap: 5px; }
+    .home-calendar-legend i { width: 7px; height: 7px; border-radius: 3px; background: #77bda6; }
+    .home-calendar-legend .legend-due { background: #e78a73; }
+    .home-calendar-legend .legend-replace { background: #aa91c4; }
+    .home-calendar-side { display: grid; gap: 15px; }
+    .home-selected-card { padding: 20px; }
+    .home-selected-date { color: #85978f; font-size: 10px; }
+    .home-selected-card h3 { margin: 4px 0 14px; color: #21483e; font-size: 18px; letter-spacing: -.02em; }
+    .home-selected-empty { padding: 12px; border-radius: 12px; background: #f6f9f7; color: #99a59f; font-size: 10px; text-align: center; }
+    .home-selected-event { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #eef2ef; }
+    .home-selected-event-icon { width: 34px; height: 34px; display: grid; place-items: center; flex: none; border-radius: 11px; background: #edf6f2; color: #3e907b; }
+    .home-selected-event-icon .icon { width: 17px; height: 17px; }
+    .home-selected-event.due .home-selected-event-icon { background: #fff0eb; color: #d47057; }
+    .home-selected-event.replace .home-selected-event-icon { background: #f3eef8; color: #8e74ad; }
+    .home-selected-event strong { display: block; font-size: 10px; }
+    .home-selected-event span { color: #98a49f; font-size: 8px; }
+    .home-selected-action { width: 100%; margin-top: 12px; padding: 9px; border: 0; border-radius: 10px; background: #dc725b; color: #fff; font-size: 10px; font-weight: 700; }
+    .home-upcoming-card { padding: 18px 20px; }
+    .home-upcoming-head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .home-upcoming-head strong { font-size: 12px; }
+    .home-upcoming-head span { color: #9aa6a1; font-size: 9px; }
+    .home-upcoming-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #eef2ef; }
+    .home-upcoming-date { width: 36px; height: 39px; display: grid; place-items: center; flex: none; border-radius: 10px; background: #eef6f3; color: #337d69; font-size: 13px; font-weight: 750; line-height: 1; }
+    .home-upcoming-date small { display: block; color: #8da198; font-size: 7px; font-weight: 500; }
+    .home-upcoming-item strong { display: block; font-size: 9px; }
+    .home-upcoming-item span { color: #9ca7a2; font-size: 8px; }
+
+    /* 方案二：明亮极简效率工具 */
+    .scene-minimal { background: #f8f9fb; color: #20242d; }
+    .minimal-shell { min-height: calc(100vh - 74px); display: grid; grid-template-columns: 218px minmax(0,1fr); }
+    .minimal-sidebar { display: flex; flex-direction: column; padding: 28px 17px 22px; background: #fff; border-right: 1px solid #e9ebf0; }
+    .minimal-logo { display: flex; align-items: center; gap: 10px; padding: 0 10px 28px; font-size: 15px; font-weight: 750; letter-spacing: -.02em; }
+    .minimal-logo-mark { width: 31px; height: 31px; display: grid; place-items: center; border-radius: 9px; background: #635bff; color: #fff; }
+    .minimal-nav-label { padding: 0 12px; margin: 5px 0 8px; color: #a0a5b0; font-size: 10px; font-weight: 700; letter-spacing: .1em; }
+    .minimal-nav { display: grid; gap: 5px; }
+    .minimal-nav button { display: flex; align-items: center; gap: 11px; width: 100%; padding: 10px 12px; border: 0; border-radius: 9px; background: transparent; color: #737985; font-size: 12px; text-align: left; cursor: pointer; }
+    .minimal-nav button.active { background: #f0efff; color: #564ed8; font-weight: 700; }
+    .minimal-nav .nav-count { margin-left: auto; min-width: 20px; padding: 1px 5px; border-radius: 6px; background: #eeeff3; color: #858b97; text-align: center; font-size: 10px; }
+    .minimal-nav button.active .nav-count { background: #dcd9ff; color: #564ed8; }
+    .minimal-local { margin-top: auto; padding: 14px 12px; border-radius: 11px; background: #f7f7fa; color: #9297a2; font-size: 10px; line-height: 1.6; }
+    .minimal-local strong { display: block; color: #666d78; font-size: 11px; margin-bottom: 2px; }
+    .minimal-main { padding: 34px 40px 38px; overflow: hidden; }
+    .minimal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+    .minimal-overline { color: #999eaa; font-size: 11px; font-weight: 600; }
+    .minimal-header h1 { margin: 4px 0 0; font-size: 29px; line-height: 1.25; letter-spacing: -.045em; }
+    .minimal-avatar { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: #e8e6ff; color: #6259d9; font-size: 12px; font-weight: 750; }
+    .minimal-columns { display: grid; grid-template-columns: minmax(0,1fr) 270px; gap: 22px; max-width: 1060px; }
+    .minimal-focus { position: relative; overflow: hidden; padding: 21px 23px; border: 1px solid #e2e0ff; border-radius: 15px; background: linear-gradient(115deg, #f1f0ff, #f7f6ff 65%, #eef6ff); }
+    .minimal-focus::after { content: ""; position: absolute; right: -35px; top: -60px; width: 150px; height: 150px; border: 24px solid rgba(99,91,255,.045); border-radius: 50%; }
+    .minimal-focus-label { color: #7068d8; font-size: 10px; font-weight: 750; letter-spacing: .08em; }
+    .minimal-focus h2 { margin: 7px 0 4px; font-size: 18px; letter-spacing: -.025em; }
+    .minimal-focus p { margin: 0; color: #81838f; font-size: 11px; }
+    .minimal-focus-action { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; padding: 9px 13px; border: 0; border-radius: 9px; background: #635bff; color: white; font-size: 11px; font-weight: 700; box-shadow: 0 7px 15px rgba(99,91,255,.18); }
+    .minimal-list-card { margin-top: 18px; border: 1px solid #e8eaf0; border-radius: 15px; background: #fff; box-shadow: 0 5px 20px rgba(34,40,55,.025); }
+    .minimal-list-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 19px; border-bottom: 1px solid #eeeff3; }
+    .minimal-list-head strong { font-size: 12px; }
+    .minimal-list-head span { color: #a0a5af; font-size: 10px; }
+    .minimal-task { display: grid; grid-template-columns: 30px minmax(0,1fr) 90px 72px; align-items: center; gap: 9px; padding: 16px 18px; border-bottom: 1px solid #f0f1f4; }
+    .minimal-task:last-child { border-bottom: 0; }
+    .minimal-check { width: 21px; height: 21px; display: grid; place-items: center; border: 1.5px solid #d2d5dd; border-radius: 50%; background: white; color: white; cursor: pointer; }
+    .minimal-check:hover { border-color: #635bff; }
+    .minimal-task.due .minimal-check { border-color: #ee8a75; background: #fff7f4; color: #dc755d; }
+    .minimal-task-title { font-size: 12px; font-weight: 650; }
+    .minimal-task-meta { margin-top: 3px; color: #a0a4ae; font-size: 9px; }
+    .minimal-task-days { color: #707682; font-size: 10px; }
+    .minimal-task.due .minimal-task-days { color: #d66f59; font-weight: 700; }
+    .minimal-pill { justify-self: end; padding: 4px 7px; border-radius: 6px; background: #f2f3f6; color: #858b96; font-size: 9px; white-space: nowrap; }
+    .minimal-pill.due { background: #fff0eb; color: #d56d56; }
+    .minimal-side { display: grid; align-content: start; gap: 16px; }
+    .minimal-side-card { padding: 18px; border: 1px solid #e8eaf0; border-radius: 15px; background: white; }
+    .minimal-side-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+    .minimal-side-title strong { font-size: 12px; }
+    .minimal-side-title span { color: #9da2ad; font-size: 9px; }
+    .mini-calendar { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px 3px; text-align: center; }
+    .mini-calendar .weekday { color: #afb3bc; font-size: 8px; padding-bottom: 3px; }
+    .mini-calendar .day { aspect-ratio: 1; display: grid; place-items: center; border-radius: 7px; color: #6e747f; font-size: 9px; }
+    .mini-calendar .day.muted { color: #d4d6dc; }
+    .mini-calendar .day.has-task { background: #f0efff; color: #6259da; font-weight: 700; }
+    .mini-calendar .day.today { background: #635bff; color: #fff; box-shadow: 0 4px 9px rgba(99,91,255,.25); }
+    .next-item { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f1f4; }
+    .next-item:last-child { border-bottom: 0; padding-bottom: 0; }
+    .next-date { width: 34px; height: 37px; display: grid; place-items: center; border-radius: 8px; background: #f4f4f8; color: #656b77; font-size: 12px; font-weight: 750; line-height: 1; }
+    .next-date small { display: block; color: #a0a4ae; font-size: 7px; font-weight: 500; }
+    .next-copy strong { display: block; font-size: 10px; }
+    .next-copy span { color: #a0a5ae; font-size: 8px; }
+
+    /* 方案三：轻快习惯日历 */
+    .scene-habit { background: radial-gradient(circle at 90% 2%, #ffedbb 0, transparent 27%), #fff9ef; color: #34362f; }
+    .habit-wrap { max-width: 1160px; margin: 0 auto; padding: 28px 30px 42px; }
+    .habit-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .habit-brand { display: flex; align-items: center; gap: 11px; }
+    .habit-logo { width: 43px; height: 43px; display: grid; place-items: center; border-radius: 50%; background: #ff826d; color: #fff; transform: rotate(-5deg); box-shadow: 0 6px 0 #f5d9c8; }
+    .habit-brand strong { display: block; font-size: 17px; letter-spacing: -.02em; }
+    .habit-brand small { color: #a09b8d; font-size: 10px; }
+    .habit-date { padding: 8px 13px; border: 1px solid #eee4d4; border-radius: 99px; background: rgba(255,255,255,.7); color: #8e887a; font-size: 11px; }
+    .habit-greeting { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+    .habit-eyebrow { display: flex; align-items: center; gap: 5px; color: #d47858; font-size: 11px; font-weight: 750; }
+    .habit-greeting h1 { margin: 7px 0 0; font-size: 29px; line-height: 1.25; letter-spacing: -.045em; }
+    .habit-week-score { flex: none; padding: 10px 15px; border-radius: 14px; background: #fff; border: 1px solid #f0e6d7; color: #8d887a; font-size: 10px; }
+    .habit-week-score strong { color: #ef7e63; font-size: 20px; margin-right: 3px; }
+    .habit-summary { display: grid; grid-template-columns: 1.6fr .7fr; gap: 16px; }
+    .habit-card { border: 1px solid #eee6d9; border-radius: 22px; background: rgba(255,255,255,.94); box-shadow: 0 8px 24px rgba(105,84,49,.05); }
+    .habit-week { padding: 20px 23px; }
+    .habit-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 17px; }
+    .habit-card-head strong { font-size: 13px; }
+    .habit-card-head span { color: #aaa293; font-size: 9px; }
+    .week-row { display: grid; grid-template-columns: repeat(7,1fr); gap: 10px; }
+    .week-day { text-align: center; color: #a39b8d; font-size: 9px; }
+    .week-day .circle { width: 37px; height: 37px; display: grid; place-items: center; margin: 7px auto 0; border-radius: 50%; background: #f7f3ec; color: #aaa394; font-size: 11px; font-weight: 650; }
+    .week-day.done .circle { background: #dff3e8; color: #439574; }
+    .week-day.today .circle { background: #ff826d; color: white; box-shadow: 0 5px 12px rgba(255,130,109,.25); }
+    .week-day.today { color: #db7158; font-weight: 700; }
+    .habit-rate { display: flex; align-items: center; justify-content: center; gap: 18px; padding: 18px 20px; }
+    .habit-donut { width: 83px; height: 83px; display: grid; place-items: center; flex: none; border-radius: 50%; background: conic-gradient(#ffae57 0 86%, #f6eee1 86%); position: relative; }
+    .habit-donut::after { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: white; }
+    .habit-donut strong { position: relative; z-index: 1; color: #d78a36; font-size: 20px; }
+    .habit-rate-copy strong { display: block; font-size: 12px; }
+    .habit-rate-copy span { display: block; margin-top: 5px; color: #aaa294; font-size: 9px; line-height: 1.5; }
+    .habit-content { display: grid; grid-template-columns: 1.55fr .75fr; gap: 16px; margin-top: 16px; }
+    .habit-list { padding: 19px 21px; }
+    .habit-row { display: grid; grid-template-columns: 40px minmax(0,1fr) 155px 72px; align-items: center; gap: 11px; padding: 13px 0; border-bottom: 1px dashed #eee6da; }
+    .habit-row:last-child { border-bottom: 0; }
+    .habit-task-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 13px; }
+    .habit-row:nth-child(2) .habit-task-icon { color: #db7059; background: #fff0e9; }
+    .habit-row:nth-child(3) .habit-task-icon { color: #41997c; background: #e5f5ed; }
+    .habit-row:nth-child(4) .habit-task-icon { color: #b48637; background: #fff4d9; }
+    .habit-row:nth-child(5) .habit-task-icon { color: #6d8fc4; background: #eaf1fb; }
+    .habit-task-name strong { display: block; font-size: 11px; }
+    .habit-task-name span { color: #aaa395; font-size: 8px; }
+    .habit-checks { display: flex; gap: 5px; }
+    .habit-checks i { width: 16px; height: 16px; display: grid; place-items: center; border-radius: 5px; background: #f5f1ea; color: transparent; font-size: 9px; font-style: normal; }
+    .habit-checks i.done { background: #dff2e8; color: #4b9a7b; }
+    .habit-checks i.due { background: #ffebe4; color: #dc765d; }
+    .habit-status { justify-self: end; padding: 5px 8px; border-radius: 8px; background: #f3f1ec; color: #8f8a80; font-size: 8px; white-space: nowrap; }
+    .habit-status.due { background: #ffeadf; color: #d66f54; font-weight: 700; }
+    .habit-side { display: grid; gap: 16px; }
+    .habit-today { padding: 20px; background: linear-gradient(145deg, #fff, #fff8f3); }
+    .habit-today-icon { width: 43px; height: 43px; display: grid; place-items: center; border-radius: 14px; background: #ffeadf; color: #df7358; }
+    .habit-today h3 { margin: 13px 0 4px; font-size: 14px; }
+    .habit-today p { margin: 0; color: #a19889; font-size: 9px; line-height: 1.6; }
+    .habit-today button { width: 100%; margin-top: 15px; padding: 10px; border: 0; border-radius: 11px; background: #ff826d; color: white; font-size: 10px; font-weight: 750; box-shadow: 0 6px 13px rgba(255,130,109,.2); }
+    .habit-footprint { padding: 18px 20px; }
+    .footprint-grid { display: grid; grid-template-columns: repeat(10,1fr); gap: 5px; }
+    .footprint-grid i { aspect-ratio: 1; border-radius: 4px; background: #f2eee6; }
+    .footprint-grid i.l1 { background: #dcefe6; }
+    .footprint-grid i.l2 { background: #a8dbc5; }
+    .footprint-grid i.l3 { background: #68bb99; }
+    .footprint-legend { display: flex; justify-content: space-between; margin-top: 10px; color: #b0a89a; font-size: 8px; }
+
+    @media (max-width: 1000px) {
+      .preview-note { display: none; }
+      .home-grid { grid-template-columns: repeat(2,1fr); }
+      .home-calendar-layout { grid-template-columns: 1fr; }
+      .home-calendar-side { grid-template-columns: 1fr 1fr; }
+      .minimal-shell { grid-template-columns: 180px minmax(0,1fr); }
+      .minimal-main { padding: 28px 24px; }
+      .minimal-columns { grid-template-columns: 1fr; }
+      .minimal-side { grid-template-columns: 1fr 1fr; }
+      .habit-row { grid-template-columns: 40px minmax(0,1fr) 75px; }
+      .habit-checks { display: none; }
+    }
+    @media (max-width: 720px) {
+      .preview-toolbar { align-items: flex-start; padding: 11px 13px; flex-direction: column; gap: 9px; }
+      .preview-brand small { display: none; }
+      .preview-tabs { width: 100%; overflow-x: auto; }
+      .preview-tab { flex: 1; padding: 8px 10px; font-size: 11px; }
+      .scene { min-height: calc(100vh - 117px); }
+      .home-wrap, .habit-wrap { padding: 20px 15px 30px; }
+      .home-hero { grid-template-columns: 1fr; }
+      .home-hero-copy { padding: 25px; }
+      .home-hero h1 { font-size: 25px; }
+      .home-hero-art { display: none; }
+      .home-grid { grid-template-columns: 1fr; }
+      .home-bottom { align-items: flex-start; flex-direction: column; }
+      .home-calendar-card { padding: 15px 12px; }
+      .home-calendar-head { align-items: flex-start; }
+      .home-calendar-side { grid-template-columns: 1fr; }
+      .home-cal-weekdays, .home-calendar-grid { gap: 3px; }
+      .home-cal-day { min-height: 49px; padding: 6px 4px; }
+      .home-cal-event { width: 5px; height: 5px; padding: 0; border-radius: 50%; color: transparent; }
+      .home-cal-events { display: flex; gap: 3px; }
+      .minimal-shell { display: block; }
+      .minimal-sidebar { display: none; }
+      .minimal-main { padding: 24px 15px; }
+      .minimal-columns, .minimal-side { grid-template-columns: 1fr; }
+      .minimal-task { grid-template-columns: 28px minmax(0,1fr) 66px; }
+      .minimal-pill { display: none; }
+      .habit-greeting { align-items: flex-start; }
+      .habit-greeting h1 { font-size: 24px; }
+      .habit-summary, .habit-content { grid-template-columns: 1fr; }
+      .week-row { gap: 4px; }
+      .week-day .circle { width: 32px; height: 32px; }
+      .habit-row { grid-template-columns: 40px minmax(0,1fr) 70px; }
+    }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.2S5.5 10.1 5.5 14.8a6.5 6.5 0 0 0 13 0C18.5 10.1 12 3.2 12 3.2Z"/><path d="M9 15.3a3.2 3.2 0 0 0 3 3.1"/></symbol>
+    <symbol id="i-tank" viewBox="0 0 24 24"><path d="M5 9h14v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9Z"/><path d="M8 9V5h8v4M8 14h8M9 3h6"/></symbol>
+    <symbol id="i-pump" viewBox="0 0 24 24"><path d="M4 8h11v11H4zM15 11h3a2 2 0 0 1 2 2v3M7 5h5M8 12h3M8 15h5"/><path d="M18 18.5c1.2 0 2-.8 2-1.8 0-.9-2-3.2-2-3.2s-2 2.3-2 3.2c0 1 .8 1.8 2 1.8Z"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6 7v6l-4 2v-8L4 5Z"/><path d="M8 8h8"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4.2 4.2L19 6.8"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8M5 10v11h14V10M9 21v-7h6v7"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.4 4.6L18 9l-4.6 1.4L12 15l-1.4-4.6L6 9l4.6-1.4L12 3ZM19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></symbol>
+  </svg>
+
+  <nav class="preview-toolbar" aria-label="视觉方案切换">
+    <div class="preview-brand">
+      <div class="preview-brand-mark"><svg class="icon"><use href="#i-drop"/></svg></div>
+      <div><strong>加湿器维护 · 视觉方案</strong><small>同一组数据，三种不同的亮色设计</small></div>
+    </div>
+    <div class="preview-tabs">
+      <button class="preview-tab active" data-scene="home">01 清新家居 + 日历</button>
+      <button class="preview-tab" data-scene="minimal">02 极简效率</button>
+      <button class="preview-tab" data-scene="habit">03 习惯日历</button>
+    </div>
+    <div class="preview-note">演示数据 · 点击按钮可预览反馈</div>
+  </nav>
+
+  <!-- 方案一 -->
+  <section class="scene scene-home active" data-panel="home">
+    <div class="home-wrap">
+      <header class="home-top">
+        <div class="home-brand"><div class="home-logo"><svg class="icon"><use href="#i-drop"/></svg></div><div><strong>清新维护</strong><small>我的加湿器</small></div></div>
+        <div class="home-date">11月22日 · 周日</div>
+      </header>
+      <div class="home-hero">
+        <div class="home-hero-copy">
+          <div class="home-eyebrow"><svg class="icon" style="width:15px;height:15px"><use href="#i-spark"/></svg>今日维护提醒</div>
+          <h1>早上好，今天有 1 项维护</h1>
+          <p><strong>清洁滤芯</strong> 已到建议时间，其他项目状态良好。</p>
+          <div class="home-actions"><button class="home-primary demo-button" data-demo-action>记录滤芯清理</button><button class="home-secondary demo-button" data-demo-action>查看维护说明</button></div>
+        </div>
+        <div class="home-hero-art">
+          <svg class="humidifier-art" viewBox="0 0 210 200" fill="none" aria-hidden="true">
+            <path d="M90 46c-14-13 12-16-1-31M112 45c-14-13 12-16-1-31M133 49c-12-11 10-15 0-27" stroke="#76b9a8" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+            <rect x="53" y="51" width="107" height="126" rx="36" fill="#fff"/>
+            <rect x="60" y="91" width="93" height="79" rx="29" fill="#e6f4ef"/>
+            <path d="M64 115c25-14 53 15 86-2v26c0 19-14 31-32 31H92c-18 0-31-12-31-31l3-24Z" fill="#b8dfd3"/>
+            <rect x="94" y="65" width="25" height="7" rx="3.5" fill="#d6e8e2"/>
+            <circle cx="107" cy="146" r="7" fill="#fff"/><path d="M107 142v5" stroke="#54a28e" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="106" cy="179" rx="56" ry="7" fill="#76a99b" opacity=".12"/>
+          </svg>
+          <div class="hero-status"><strong>1</strong> 项待清理</div>
+        </div>
+      </div>
+      <div class="home-section-head"><h2>维护项目</h2><span>按建议周期自动计算</span></div>
+      <div class="home-grid">
+        <article class="home-card urgent">
+          <div class="home-card-top"><div class="home-task-icon"><svg class="icon"><use href="#i-drop"/></svg></div><span class="home-badge due">已到期</span></div>
+          <h3>清洁滤芯</h3><span class="home-last">上次清理 · 11月15日</span>
+          <div class="home-count">今天清理</div><div class="home-progress"><span style="width:100%"></span></div>
+          <button class="home-record demo-button" data-demo-action>✓ 今天已清理</button>
+        </article>
+        <article class="home-card">
+          <div class="home-card-top"><div class="home-task-icon"><svg class="icon"><use href="#i-tank"/></svg></div><span class="home-badge">每 7 天</span></div>
+          <h3>清洁水箱和机身</h3><span class="home-last">上次清理 · 11月17日</span>
+          <div class="home-count">2<small>天后清理</small></div><div class="home-progress"><span style="width:71%"></span></div>
+          <button class="home-record demo-button" data-demo-action>✓ 今天已清理</button>
+        </article>
+        <article class="home-card">
+          <div class="home-card-top"><div class="home-task-icon"><svg class="icon"><use href="#i-pump"/></svg></div><span class="home-badge">每 30 天</span></div>
+          <h3>水泵除垢</h3><span class="home-last">上次清理 · 10月30日</span>
+          <div class="home-count">7<small>天后清理</small></div><div class="home-progress"><span style="width:77%"></span></div>
+          <button class="home-record demo-button" data-demo-action>✓ 今天已清理</button>
+        </article>
+        <article class="home-card">
+          <div class="home-card-top"><div class="home-task-icon"><svg class="icon"><use href="#i-filter"/></svg></div><span class="home-badge">每 180 天</span></div>
+          <h3>更换滤芯</h3><span class="home-last">上次更换 · 9月15日</span>
+          <div class="home-count">112<small>天后更换</small></div><div class="home-progress"><span style="width:38%;background:#a58cc7"></span></div>
+          <button class="home-record demo-button" data-demo-action>✓ 今天已更换</button>
+        </article>
+      </div>
+      <div class="home-bottom"><span><strong>本周维护足迹</strong> · 已完成 2 次清理，保持得不错</span><div class="home-dots"><i class="done"></i><i></i><i class="done"></i><i></i><i></i><i></i><i class="done"></i></div><span>记录仅保存在本机</span></div>
+
+      <div class="home-calendar-section">
+        <div class="home-section-head"><h2>维护日历</h2><span>点击日期查看当天安排</span></div>
+        <div class="home-calendar-layout">
+          <section class="home-calendar-card">
+            <div class="home-calendar-head">
+              <div class="home-calendar-title"><strong id="homeCalendarMonth">2026年 11月</strong><span>维护安排与完成记录</span></div>
+              <div class="home-calendar-controls"><button class="home-cal-nav" data-home-nav="prev" aria-label="上个月">‹</button><button class="home-cal-today" data-home-nav="today">回到今天</button><button class="home-cal-nav" data-home-nav="next" aria-label="下个月">›</button></div>
+            </div>
+            <div class="home-cal-weekdays"><span>周日</span><span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span></div>
+            <div id="homeCalendarGrid" class="home-calendar-grid"></div>
+            <div class="home-calendar-legend"><span><i></i>已完成</span><span><i class="legend-due"></i>待清理</span><span><i class="legend-replace"></i>滤芯更换</span></div>
+          </section>
+          <aside class="home-calendar-side">
+            <section class="home-selected-card">
+              <div id="homeSelectedOverline" class="home-selected-date">星期日 · 选中日期</div>
+              <h3 id="homeSelectedTitle">11月22日</h3>
+              <div id="homeSelectedEvents"></div>
+            </section>
+            <section class="home-upcoming-card">
+              <div class="home-upcoming-head"><strong>接下来</strong><span>近期维护安排</span></div>
+              <div id="homeUpcomingList"></div>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 方案二 -->
+  <section class="scene scene-minimal" data-panel="minimal">
+    <div class="minimal-shell">
+      <aside class="minimal-sidebar">
+        <div class="minimal-logo"><div class="minimal-logo-mark"><svg class="icon" style="width:17px;height:17px"><use href="#i-drop"/></svg></div>purely.</div>
+        <div class="minimal-nav-label">维护管理</div>
+        <nav class="minimal-nav">
+          <button class="active"><svg class="icon" style="width:17px;height:17px"><use href="#i-home"/></svg>今天<span class="nav-count">1</span></button>
+          <button><svg class="icon" style="width:17px;height:17px"><use href="#i-list"/></svg>全部项目<span class="nav-count">4</span></button>
+          <button><svg class="icon" style="width:17px;height:17px"><use href="#i-calendar"/></svg>维护日历</button>
+          <button><svg class="icon" style="width:17px;height:17px"><use href="#i-history"/></svg>清理记录</button>
+        </nav>
+        <div class="minimal-nav-label" style="margin-top:24px">偏好</div>
+        <nav class="minimal-nav"><button><svg class="icon" style="width:17px;height:17px"><use href="#i-settings"/></svg>周期与设置</button></nav>
+        <div class="minimal-local"><strong>本地记录</strong>无需账号，数据仅保存在当前浏览器。</div>
+      </aside>
+      <main class="minimal-main">
+        <header class="minimal-header"><div><div class="minimal-overline">周日，11月22日</div><h1>维护日程</h1></div><div class="minimal-avatar">我的</div></header>
+        <div class="minimal-columns">
+          <div>
+            <section class="minimal-focus">
+              <div class="minimal-focus-label">NEXT UP · 今日待办</div><h2>清洁滤芯</h2><p>已到 7 天建议周期 · 上次清理于 11月15日</p>
+              <button class="minimal-focus-action demo-button" data-demo-action><svg class="icon" style="width:14px;height:14px"><use href="#i-check"/></svg>标记为已完成</button>
+            </section>
+            <section class="minimal-list-card">
+              <div class="minimal-list-head"><strong>全部维护项目</strong><span>4 个项目</span></div>
+              <div class="minimal-task due"><button class="minimal-check demo-button" data-demo-action><svg class="icon" style="width:13px;height:13px"><use href="#i-arrow"/></svg></button><div><div class="minimal-task-title">清洁滤芯</div><div class="minimal-task-meta">11月15日 · 每 7 天</div></div><div class="minimal-task-days">今天到期</div><span class="minimal-pill due">需清理</span></div>
+              <div class="minimal-task"><button class="minimal-check demo-button" data-demo-action></button><div><div class="minimal-task-title">清洁水箱和机身</div><div class="minimal-task-meta">11月17日 · 每 7 天</div></div><div class="minimal-task-days">还剩 2 天</div><span class="minimal-pill">11月24日</span></div>
+              <div class="minimal-task"><button class="minimal-check demo-button" data-demo-action></button><div><div class="minimal-task-title">水泵除垢</div><div class="minimal-task-meta">10月30日 · 每 30 天</div></div><div class="minimal-task-days">还剩 7 天</div><span class="minimal-pill">11月29日</span></div>
+              <div class="minimal-task"><button class="minimal-check demo-button" data-demo-action></button><div><div class="minimal-task-title">更换滤芯</div><div class="minimal-task-meta">9月15日 · 每 180 天</div></div><div class="minimal-task-days">还剩 112 天</div><span class="minimal-pill">3月14日</span></div>
+            </section>
+          </div>
+          <aside class="minimal-side">
+            <section class="minimal-side-card"><div class="minimal-side-title"><strong>2026年 11月</strong><span>今天 22</span></div><div id="miniCalendar" class="mini-calendar"></div></section>
+            <section class="minimal-side-card"><div class="minimal-side-title"><strong>接下来</strong><span>未来 7 天</span></div>
+              <div class="next-item"><div class="next-date">24<small>11月</small></div><div class="next-copy"><strong>清洁水箱和机身</strong><span>周二 · 每 7 天</span></div></div>
+              <div class="next-item"><div class="next-date">29<small>11月</small></div><div class="next-copy"><strong>水泵除垢</strong><span>周日 · 每 30 天</span></div></div>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <!-- 方案三 -->
+  <section class="scene scene-habit" data-panel="habit">
+    <div class="habit-wrap">
+      <header class="habit-top"><div class="habit-brand"><div class="habit-logo"><svg class="icon"><use href="#i-drop"/></svg></div><div><strong>小习惯 · 加湿器维护</strong><small>一点点清理，一直保持清新</small></div></div><div class="habit-date">11月22日 · 周日</div></header>
+      <div class="habit-greeting"><div><div class="habit-eyebrow"><svg class="icon" style="width:15px;height:15px"><use href="#i-spark"/></svg>本周维护得不错</div><h1>让清洁变成轻松的小习惯。</h1></div><div class="habit-week-score"><strong>5</strong>次维护已完成</div></div>
+      <div class="habit-summary">
+        <section class="habit-card habit-week"><div class="habit-card-head"><strong>本周清理足迹</strong><span>11月16日 — 11月22日</span></div><div class="week-row">
+          <div class="week-day done">一<div class="circle">✓</div></div><div class="week-day">二<div class="circle">17</div></div><div class="week-day done">三<div class="circle">✓</div></div><div class="week-day">四<div class="circle">19</div></div><div class="week-day done">五<div class="circle">✓</div></div><div class="week-day">六<div class="circle">21</div></div><div class="week-day today">日<div class="circle">22</div></div>
+        </div></section>
+        <section class="habit-card habit-rate"><div class="habit-donut"><strong>86%</strong></div><div class="habit-rate-copy"><strong>本月维护完成率</strong><span>比上个月更棒一点<br>继续保持清爽状态</span></div></section>
+      </div>
+      <div class="habit-content">
+        <section class="habit-card habit-list"><div class="habit-card-head"><strong>维护习惯</strong><span>最近 7 天</span></div>
+          <div class="habit-row"><div class="habit-task-icon"><svg class="icon"><use href="#i-drop"/></svg></div><div class="habit-task-name"><strong>清洁滤芯</strong><span>每 7 天 · 上次 11月15日</span></div><div class="habit-checks"><i class="done">✓</i><i></i><i></i><i></i><i></i><i></i><i class="due">!</i></div><span class="habit-status due">今天清理</span></div>
+          <div class="habit-row"><div class="habit-task-icon"><svg class="icon"><use href="#i-tank"/></svg></div><div class="habit-task-name"><strong>清洁水箱和机身</strong><span>每 7 天 · 上次 11月17日</span></div><div class="habit-checks"><i></i><i class="done">✓</i><i></i><i></i><i></i><i></i><i></i></div><span class="habit-status">还剩 2 天</span></div>
+          <div class="habit-row"><div class="habit-task-icon"><svg class="icon"><use href="#i-pump"/></svg></div><div class="habit-task-name"><strong>水泵除垢</strong><span>每 30 天 · 上次 10月30日</span></div><div class="habit-checks"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="habit-status">还剩 7 天</span></div>
+          <div class="habit-row"><div class="habit-task-icon"><svg class="icon"><use href="#i-filter"/></svg></div><div class="habit-task-name"><strong>更换滤芯</strong><span>每 180 天 · 上次 9月15日</span></div><div class="habit-checks"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="habit-status">还剩 112 天</span></div>
+        </section>
+        <aside class="habit-side">
+          <section class="habit-card habit-today"><div class="habit-today-icon"><svg class="icon"><use href="#i-drop"/></svg></div><h3>今天清洁一下滤芯吧</h3><p>已经到建议周期啦。<br>花几分钟，让加湿器保持好状态。</p><button class="demo-button" data-demo-action>完成啦，记录一下 ✓</button></section>
+          <section class="habit-card habit-footprint"><div class="habit-card-head"><strong>11月清理足迹</strong><span>12 次</span></div><div class="footprint-grid" id="footprintGrid"></div><div class="footprint-legend"><span>少</span><span>颜色越深，完成越多</span><span>多</span></div></section>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">这是视觉预览，正式版会在这里保存清理记录。</div>
+
+  <script>
+    const panels = [...document.querySelectorAll("[data-panel]")];
+    const tabs = [...document.querySelectorAll("[data-scene]")];
+    const validScenes = new Set(panels.map(panel => panel.dataset.panel));
+
+    function showScene(name) {
+      const selected = validScenes.has(name) ? name : "home";
+      panels.forEach(panel => panel.classList.toggle("active", panel.dataset.panel === selected));
+      tabs.forEach(tab => tab.classList.toggle("active", tab.dataset.scene === selected));
+      document.title = `${selected === "home" ? "01 清新家居" : selected === "minimal" ? "02 极简效率" : "03 习惯日历"} · 加湿器维护`;
+    }
+
+    tabs.forEach(tab => tab.addEventListener("click", () => {
+      history.replaceState(null, "", `#${tab.dataset.scene}`);
+      showScene(tab.dataset.scene);
+    }));
+    window.addEventListener("hashchange", () => showScene(location.hash.slice(1)));
+    showScene(location.hash.slice(1));
+
+    let toastTimer;
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-demo-action]");
+      if (!button) return;
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    });
+
+    const calendar = document.getElementById("miniCalendar");
+    ["日","一","二","三","四","五","六"].forEach(day => calendar.insertAdjacentHTML("beforeend", `<span class="weekday">${day}</span>`));
+    for (let day = 1; day <= 30; day += 1) {
+      const classes = ["day"];
+      if ([3,8,15,17].includes(day)) classes.push("has-task");
+      if (day === 22) classes.push("today");
+      calendar.insertAdjacentHTML("beforeend", `<span class="${classes.join(" ")}">${day}</span>`);
+    }
+
+    const footprint = document.getElementById("footprintGrid");
+    const levels = [0,1,0,2,0,1,0,0,1,0, 0,0,1,0,0,2,1,0,0,0, 1,2,0,1,0,0,3,0,1,0, 0,1,0,2,1,0,0,2,0,1, 0,0,3,0,1,0,2,0,0,1, 0,1,0,0,2,0,1,0,0,0];
+    levels.forEach(level => footprint.insertAdjacentHTML("beforeend", `<i class="${level ? `l${level}` : ""}"></i>`));
+
+    /* 方案一日历：使用同一组演示数据，可翻月并选择日期 */
+    const HOME_DEMO_TODAY = "2026-11-22";
+    const homeCalendarTasks = [
+      { id: "filter", name: "清洁滤芯", short: "滤芯", lastDone: "2026-11-15", interval: 7, icon: "i-drop", replace: false },
+      { id: "tank", name: "清洁水箱和机身", short: "水箱", lastDone: "2026-11-17", interval: 7, icon: "i-tank", replace: false },
+      { id: "pump", name: "水泵除垢", short: "水泵", lastDone: "2026-10-30", interval: 30, icon: "i-pump", replace: false },
+      { id: "replace", name: "更换滤芯", short: "换滤芯", lastDone: "2026-09-15", interval: 180, icon: "i-filter", replace: true }
+    ];
+    let homeCalendarCursor = new Date(2026, 10, 1, 12);
+    let homeSelectedDate = HOME_DEMO_TODAY;
+
+    function homeDateString(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    }
+
+    function homeParseDate(value) {
+      const [year, month, day] = value.split("-").map(Number);
+      return new Date(year, month - 1, day, 12);
+    }
+
+    function homeAddDays(value, days) {
+      const date = homeParseDate(value);
+      date.setDate(date.getDate() + days);
+      return homeDateString(date);
+    }
+
+    function homeEventsFor(value) {
+      const events = [];
+      homeCalendarTasks.forEach(task => {
+        if (task.lastDone === value) {
+          events.push({ ...task, kind: "done", state: "已完成", detail: "完成记录" });
+        }
+        let next = homeAddDays(task.lastDone, task.interval);
+        let guard = 0;
+        while (next < value && guard < 1000) {
+          next = homeAddDays(next, task.interval);
+          guard += 1;
+        }
+        if (next === value) {
+          const overdue = value <= HOME_DEMO_TODAY;
+          const kind = task.replace ? "replace" : overdue ? "due" : "planned";
+          const state = overdue
+            ? task.replace ? "需要更换" : "需要清理"
+            : task.replace ? "计划更换" : "计划清理";
+          events.push({ ...task, kind, state, detail: `每 ${task.interval} 天 · ${state}` });
+        }
+      });
+      return events;
+    }
+
+    function homeRenderSelected() {
+      const selected = homeParseDate(homeSelectedDate);
+      const weekday = new Intl.DateTimeFormat("zh-CN", { weekday: "long" }).format(selected);
+      document.getElementById("homeSelectedOverline").textContent = `${weekday} · 选中日期`;
+      document.getElementById("homeSelectedTitle").textContent = `${selected.getMonth() + 1}月${selected.getDate()}日`;
+      const container = document.getElementById("homeSelectedEvents");
+      const events = homeEventsFor(homeSelectedDate);
+      container.innerHTML = events.length ? events.map(event => `
+        <div class="home-selected-event ${event.kind}">
+          <div class="home-selected-event-icon"><svg class="icon"><use href="#${event.icon}"/></svg></div>
+          <div><strong>${event.name}</strong><span>${event.detail}</span></div>
+        </div>
+      `).join("") : `<div class="home-selected-empty">这一天没有维护安排</div>`;
+      const dueTask = events.find(event => event.kind === "due");
+      if (dueTask) {
+        container.insertAdjacentHTML("beforeend", `<button class="home-selected-action" data-demo-action>记录${dueTask.short}清理</button>`);
+      }
+    }
+
+    function homeRenderUpcoming() {
+      const upcoming = [];
+      for (let offset = 1; offset <= 45 && upcoming.length < 3; offset += 1) {
+        const date = homeAddDays(HOME_DEMO_TODAY, offset);
+        homeEventsFor(date).filter(event => event.kind !== "done").forEach(event => {
+          if (upcoming.length < 3) upcoming.push({ ...event, date });
+        });
+      }
+      document.getElementById("homeUpcomingList").innerHTML = upcoming.map(event => {
+        const date = homeParseDate(event.date);
+        return `<div class="home-upcoming-item"><div class="home-upcoming-date">${date.getDate()}<small>${date.getMonth() + 1}月</small></div><div><strong>${event.name}</strong><span>${event.state} · 每 ${event.interval} 天</span></div></div>`;
+      }).join("");
+    }
+
+    function homeRenderCalendar() {
+      const year = homeCalendarCursor.getFullYear();
+      const month = homeCalendarCursor.getMonth();
+      document.getElementById("homeCalendarMonth").textContent = `${year}年 ${month + 1}月`;
+      const grid = document.getElementById("homeCalendarGrid");
+      grid.innerHTML = "";
+      const first = new Date(year, month, 1, 12);
+      const start = new Date(year, month, 1 - first.getDay(), 12);
+
+      for (let index = 0; index < 42; index += 1) {
+        const date = new Date(start);
+        date.setDate(start.getDate() + index);
+        const value = homeDateString(date);
+        const events = homeEventsFor(value);
+        const classes = ["home-cal-day"];
+        if (date.getMonth() !== month) classes.push("outside");
+        if (value === HOME_DEMO_TODAY) classes.push("today");
+        if (value === homeSelectedDate) classes.push("selected");
+        const markers = events.slice(0, 2).map(event => `<span class="home-cal-event ${event.kind}">${event.short}${event.kind === "done" ? " ✓" : ""}</span>`).join("");
+        const more = events.length > 2 ? `<span class="home-cal-event">+${events.length - 2}</span>` : "";
+        grid.insertAdjacentHTML("beforeend", `<button type="button" class="${classes.join(" ")}" data-home-date="${value}" aria-label="${value} ${events.map(event => event.name).join("、")}"><span class="home-cal-number">${date.getDate()}</span><span class="home-cal-events">${markers}${more}</span></button>`);
+      }
+      homeRenderSelected();
+    }
+
+    document.getElementById("homeCalendarGrid").addEventListener("click", event => {
+      const button = event.target.closest("[data-home-date]");
+      if (!button) return;
+      homeSelectedDate = button.dataset.homeDate;
+      const selected = homeParseDate(homeSelectedDate);
+      homeCalendarCursor = new Date(selected.getFullYear(), selected.getMonth(), 1, 12);
+      homeRenderCalendar();
+    });
+
+    document.querySelectorAll("[data-home-nav]").forEach(button => button.addEventListener("click", () => {
+      if (button.dataset.homeNav === "today") {
+        homeCalendarCursor = new Date(2026, 10, 1, 12);
+        homeSelectedDate = HOME_DEMO_TODAY;
+      } else {
+        const change = button.dataset.homeNav === "next" ? 1 : -1;
+        homeCalendarCursor = new Date(homeCalendarCursor.getFullYear(), homeCalendarCursor.getMonth() + change, 1, 12);
+      }
+      homeRenderCalendar();
+    }));
+
+    homeRenderCalendar();
+    homeRenderUpcoming();
+  </script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加湿器清洁日程</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3f7f6;
+      --card: #ffffff;
+      --text: #19332f;
+      --muted: #687c78;
+      --line: #dce8e5;
+      --primary: #167d6d;
+      --primary-dark: #0e6255;
+      --primary-soft: #e4f4f0;
+      --danger: #b83a3a;
+      --danger-soft: #fff0ee;
+      --warning: #946200;
+      --warning-soft: #fff7df;
+      --shadow: 0 12px 36px rgba(31, 75, 67, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 28px 18px 48px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    .container { max-width: 1180px; margin: 0 auto; }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    h1 { margin: 0 0 6px; font-size: clamp(26px, 4vw, 38px); line-height: 1.25; }
+    h2 { margin: 0 0 16px; font-size: 20px; }
+    p { margin: 0; }
+    .subtitle, .muted { color: var(--muted); }
+
+    .today {
+      flex: none;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.7);
+      text-align: right;
+    }
+
+    .alert {
+      display: none;
+      margin-bottom: 20px;
+      padding: 16px 18px;
+      border: 1px solid #efc2bd;
+      border-radius: 14px;
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .alert.visible { display: block; }
+    .alert strong { display: block; margin-bottom: 3px; font-size: 17px; }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .summary-card, .card {
+      border: 1px solid rgba(220, 232, 229, 0.9);
+      border-radius: 16px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .summary-card { padding: 16px 18px; }
+    .summary-card .number { display: block; font-size: 28px; font-weight: 750; line-height: 1.25; }
+    .summary-card .label { color: var(--muted); font-size: 14px; }
+    .summary-card.overdue .number { color: var(--danger); }
+
+    .card { padding: 22px; margin-bottom: 20px; }
+    .table-wrap { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    th, td { padding: 15px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+    th { color: var(--muted); font-size: 13px; font-weight: 600; white-space: nowrap; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr.overdue { background: #fffafa; }
+    .task-name { font-weight: 700; white-space: nowrap; }
+    .task-note { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 400; white-space: normal; }
+
+    input[type="date"], input[type="number"] {
+      width: 100%;
+      min-width: 128px;
+      padding: 9px 10px;
+      border: 1px solid #bdcec9;
+      border-radius: 9px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+    }
+
+    input[type="number"] { min-width: 72px; width: 78px; }
+    input:focus { outline: 3px solid rgba(22, 125, 109, 0.16); border-color: var(--primary); }
+    .interval { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 14px;
+      background: var(--primary);
+      color: white;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 650;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button:hover { background: var(--primary-dark); }
+    button:focus-visible { outline: 3px solid rgba(22, 125, 109, 0.25); outline-offset: 2px; }
+
+    .status {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status.overdue { background: var(--danger-soft); color: var(--danger); }
+    .status.soon { background: var(--warning-soft); color: var(--warning); }
+    .status.empty { background: #edf1f0; color: var(--muted); }
+    .cell-main { white-space: nowrap; }
+    .cell-sub { color: var(--muted); font-size: 12px; white-space: nowrap; }
+
+    details { border-top: 1px solid var(--line); padding: 14px 0; }
+    details:last-child { border-bottom: 1px solid var(--line); }
+    summary { cursor: pointer; font-weight: 700; }
+    details ul, details ol { margin: 12px 0 0; padding-left: 23px; color: #3f5651; }
+    details li + li { margin-top: 6px; }
+
+    .footer-note {
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #eaf1ef;
+      color: #526a65;
+      font-size: 13px;
+    }
+
+    #storageWarning { display: none; margin-top: 12px; color: var(--danger); }
+
+    @media (max-width: 720px) {
+      body { padding: 18px 12px 36px; }
+      .hero { display: block; }
+      .today { margin-top: 14px; text-align: left; }
+      .summary { grid-template-columns: 1fr; gap: 8px; }
+      .summary-card { display: flex; align-items: center; gap: 12px; padding: 10px 16px; }
+      .summary-card .number { font-size: 24px; }
+      .card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <div>
+        <h1>加湿器清洁日程</h1>
+        <p class="subtitle">记录上次维护日期，按天数判断是否需要及时清理。</p>
+      </div>
+      <div class="today">今天<br><strong id="todayLabel"></strong></div>
+    </header>
+
+    <section id="overdueAlert" class="alert" role="alert" aria-live="polite">
+      <strong>需要及时清理</strong>
+      <span id="overdueText"></span>
+    </section>
+
+    <section class="summary" aria-label="维护概览">
+      <div class="summary-card overdue">
+        <span id="overdueCount" class="number">0</span>
+        <span class="label">已到维护时间的项目</span>
+      </div>
+      <div class="summary-card">
+        <span id="soonCount" class="number">0</span>
+        <span class="label">明天到期的项目</span>
+      </div>
+      <div class="summary-card">
+        <span id="unrecordedCount" class="number">0</span>
+        <span class="label">尚未记录日期的项目</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>维护日程表</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>项目</th>
+              <th>上次完成日期</th>
+              <th>已经间隔</th>
+              <th>提醒周期</th>
+              <th>下次日期</th>
+              <th>状态</th>
+              <th>完成记录</th>
+            </tr>
+          </thead>
+          <tbody id="taskRows"></tbody>
+        </table>
+      </div>
+      <p id="storageWarning">浏览器未允许本地存储，本次记录可能无法在关闭页面后保留。</p>
+    </section>
+
+    <section class="card">
+      <h2>使用与维护说明</h2>
+      <details open>
+        <summary>怎么记录和提醒</summary>
+        <ol>
+          <li>第一次使用时，在“上次完成日期”中补填日期；以后每次完成后，点击对应项目的“今天已清理”或“今天已更换”。</li>
+          <li>提醒天数可直接修改，所有记录会自动保存在当前浏览器本机。</li>
+          <li>当“已经间隔天数 ≥ 提醒周期”时，项目会标红并提示“需要及时清理”或“需要及时更换”。</li>
+        </ol>
+      </details>
+      <details>
+        <summary>滤芯和水箱清洁注意事项</summary>
+        <ul>
+          <li>滤芯建议每周清洗，每 6～12 个月更换；装回时确保平整服帖、无翘起。</li>
+          <li>滤芯不可使用消毒液、强氧化性、腐蚀性或碱性物质；水温不得超过 40℃，不可烘干。</li>
+          <li>水箱和机身建议每周清洁；倒出水箱余水，用清水冲洗，并用软布擦干水箱外侧及下耦合器。</li>
+        </ul>
+      </details>
+      <details>
+        <summary>水泵除垢简要步骤</summary>
+        <ol>
+          <li>清空水箱，加入不少于 1 升的柠檬酸溶液；参考比例为 1 升水加 20 克柠檬酸除垢剂，或以产品说明为准。</li>
+          <li>安装好加湿器，在待机状态下长按说明书图示按键 7 秒，运行约 1 小时。</li>
+          <li>结束后倒掉余水，清洗水箱后再使用。水泵内部清洁请按说明书二维码视频操作。</li>
+        </ol>
+      </details>
+    </section>
+
+    <div class="footer-note">
+      按你的要求，本页面不运行后台任务。页面打开时会自动更新天数并显示到期提醒；页面关闭后不会主动发送通知。清理记录仅保存在当前浏览器中，清除浏览器网站数据前请先做好记录备份。
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "humidifier-maintenance-v1";
+    const DEFAULT_TASKS = [
+      { id: "filter-clean", name: "清洁滤芯", interval: 7, lastDone: "", action: "今天已清理", note: "说明书建议每周一次" },
+      { id: "tank-clean", name: "清洁水箱和机身", interval: 7, lastDone: "", action: "今天已清理", note: "说明书建议每周一次" },
+      { id: "pump-descale", name: "水泵除垢", interval: 30, lastDone: "", action: "今天已清理", note: "默认 30 天，可按水质调整为 30～60 天" },
+      { id: "filter-replace", name: "更换滤芯", interval: 180, lastDone: "", action: "今天已更换", note: "默认 180 天，可调整为 180～365 天", replace: true }
+    ];
+
+    let storageAvailable = true;
+    let tasks = loadTasks();
+
+    function loadTasks() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if (!saved || !Array.isArray(saved.tasks)) return DEFAULT_TASKS.map(task => ({ ...task }));
+        return DEFAULT_TASKS.map(defaultTask => {
+          const old = saved.tasks.find(task => task.id === defaultTask.id) || {};
+          return {
+            ...defaultTask,
+            interval: validInterval(old.interval) ? Number(old.interval) : defaultTask.interval,
+            lastDone: validDateString(old.lastDone) ? old.lastDone : ""
+          };
+        });
+      } catch (error) {
+        storageAvailable = false;
+        return DEFAULT_TASKS.map(task => ({ ...task }));
+      }
+    }
+
+    function saveTasks() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ tasks }));
+        storageAvailable = true;
+      } catch (error) {
+        storageAvailable = false;
+      }
+    }
+
+    function validInterval(value) {
+      const number = Number(value);
+      return Number.isInteger(number) && number >= 1 && number <= 730;
+    }
+
+    function validDateString(value) {
+      if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+      const date = parseDate(value);
+      return !Number.isNaN(date.getTime()) && toDateString(date) === value;
+    }
+
+    function parseDate(value) {
+      const [year, month, day] = value.split("-").map(Number);
+      return new Date(year, month - 1, day, 12, 0, 0, 0);
+    }
+
+    function toDateString(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function todayString() {
+      return toDateString(new Date());
+    }
+
+    function addDays(value, days) {
+      const date = parseDate(value);
+      date.setDate(date.getDate() + days);
+      return toDateString(date);
+    }
+
+    function daysBetween(from, to) {
+      return Math.round((parseDate(to) - parseDate(from)) / 86400000);
+    }
+
+    function formatDate(value) {
+      if (!value) return "—";
+      return new Intl.DateTimeFormat("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        weekday: "short"
+      }).format(parseDate(value));
+    }
+
+    function getView(task) {
+      if (!task.lastDone) {
+        return { elapsed: null, next: "", remaining: null, className: "empty", status: "尚未记录" };
+      }
+      const elapsed = daysBetween(task.lastDone, todayString());
+      const next = addDays(task.lastDone, task.interval);
+      const remaining = task.interval - elapsed;
+      if (elapsed < 0) {
+        return { elapsed, next, remaining, className: "empty", status: "日期待确认" };
+      }
+      if (remaining <= 0) {
+        return {
+          elapsed, next, remaining, className: "overdue",
+          status: task.replace ? "需要及时更换" : "需要及时清理"
+        };
+      }
+      if (remaining === 1) {
+        return { elapsed, next, remaining, className: "soon", status: "明天到期" };
+      }
+      return { elapsed, next, remaining, className: "normal", status: `还有 ${remaining} 天` };
+    }
+
+    function render() {
+      const today = todayString();
+      document.getElementById("todayLabel").textContent = formatDate(today);
+      const rows = document.getElementById("taskRows");
+      rows.innerHTML = "";
+
+      let overdueCount = 0;
+      let soonCount = 0;
+      let unrecordedCount = 0;
+      const overdueNames = [];
+
+      tasks.forEach(task => {
+        const view = getView(task);
+        if (view.className === "overdue") {
+          overdueCount += 1;
+          overdueNames.push(task.name);
+        }
+        if (view.className === "soon") soonCount += 1;
+        if (!task.lastDone) unrecordedCount += 1;
+
+        const row = document.createElement("tr");
+        if (view.className === "overdue") row.className = "overdue";
+        row.innerHTML = `
+          <td><span class="task-name">${task.name}</span><span class="task-note">${task.note}</span></td>
+          <td><input type="date" value="${task.lastDone}" max="${today}" data-id="${task.id}" data-field="lastDone" aria-label="${task.name}上次完成日期"></td>
+          <td><div class="cell-main">${view.elapsed === null ? "—" : view.elapsed < 0 ? "日期待确认" : `已过 ${view.elapsed} 天`}</div></td>
+          <td><div class="interval"><input type="number" min="1" max="730" step="1" value="${task.interval}" data-id="${task.id}" data-field="interval" aria-label="${task.name}提醒天数"><span>天</span></div></td>
+          <td><div class="cell-main">${view.next ? formatDate(view.next) : "—"}</div></td>
+          <td><span class="status ${view.className}">${view.status}</span></td>
+          <td><button type="button" data-complete="${task.id}">${task.action}</button></td>
+        `;
+        rows.appendChild(row);
+      });
+
+      document.getElementById("overdueCount").textContent = overdueCount;
+      document.getElementById("soonCount").textContent = soonCount;
+      document.getElementById("unrecordedCount").textContent = unrecordedCount;
+      document.getElementById("overdueAlert").classList.toggle("visible", overdueCount > 0);
+      document.getElementById("overdueText").textContent = overdueCount > 0
+        ? `${overdueNames.join("、")}已到设定的维护时间，请及时处理。`
+        : "";
+      document.getElementById("storageWarning").style.display = storageAvailable ? "none" : "block";
+      document.title = overdueCount > 0 ? `【${overdueCount} 项待清理】加湿器清洁日程` : "加湿器清洁日程";
+    }
+
+    document.getElementById("taskRows").addEventListener("click", event => {
+      const button = event.target.closest("button[data-complete]");
+      if (!button) return;
+      const task = tasks.find(item => item.id === button.dataset.complete);
+      if (!task) return;
+      task.lastDone = todayString();
+      saveTasks();
+      render();
+    });
+
+    document.getElementById("taskRows").addEventListener("change", event => {
+      const input = event.target.closest("input[data-id][data-field]");
+      if (!input) return;
+      const task = tasks.find(item => item.id === input.dataset.id);
+      if (!task) return;
+
+      if (input.dataset.field === "lastDone") {
+        task.lastDone = validDateString(input.value) ? input.value : "";
+      } else if (input.dataset.field === "interval") {
+        if (validInterval(input.value)) {
+          task.interval = Number(input.value);
+        }
+      }
+      saveTasks();
+      render();
+    });
+
+    render();
+    setInterval(render, 60000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+- insert:
+    - id: home-maintenance
+      name: '@local/dsh-home-maintenance'

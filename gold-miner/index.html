@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6efe1" />
+    <meta name="description" content="经典黄金矿工网页小游戏。多档难度、随机关卡商店、经典金猪与 TNT，一起重温淘金快乐！" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232f4a3f'/%3E%3Cpath d='M13 38 20 18 39 13 53 27 48 47 27 53Z' fill='%23f8bd3c' stroke='%23d88b22' stroke-width='4'/%3E%3Cpath d='m21 23 12-5-4 12Z' fill='%23ffe79a'/%3E%3C/svg%3E" />
+    <title>黄金矿工 · Gold Rush</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand" aria-label="黄金矿工 Gold Rush">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none"><path d="M12 35 34 12M18 10c8-5 17-2 22 5-8-3-15-1-20 4" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /><path d="m9 32 7 7" stroke="currentColor" stroke-width="5" stroke-linecap="round" /></svg>
+          </div>
+          <div><span class="brand-en">GOLD RUSH</span><h1>黄金矿工</h1></div>
+        </div>
+        <div class="top-actions">
+          <div class="best-score" title="各难度分别保存最高纪录"><span>最高纪录</span><strong id="bestScore">$0</strong></div>
+          <button class="icon-button" id="soundButton" type="button" aria-label="关闭音效" title="音效 (M)">
+            <svg id="soundOnIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Zm4 4a4 4 0 0 1 0 6m2-9a8 8 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <svg id="soundOffIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden><path d="M11 5 6 9H3v6h3l5 4V5Zm5 5 5 5m0-5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+          <button class="icon-button" id="helpButton" type="button" aria-label="游戏玩法" title="游戏玩法"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" /><path d="M9.7 9a2.4 2.4 0 0 1 4.65.8c0 1.8-2.35 2-2.35 3.7m0 3v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg></button>
+          <button class="icon-button" id="restartButton" type="button" aria-label="重新开始" title="重新开始"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4v6h6M5.5 15a7 7 0 1 0 .5-7L4 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
+        </div>
+      </header>
+
+      <main>
+        <section class="game-card" aria-label="黄金矿工游戏区">
+          <div class="setup-screen" id="setupScreen">
+            <div class="setup-screen-header"><div><span class="eyebrow">GOLD CREEK EXPEDITION</span><h2>出征准备</h2><p>组建矿工小队，选择任务与目标矿区。</p></div><div class="setup-stepper" id="setupStepper" aria-label="准备步骤"></div></div>
+            <div class="setup-workspace"><div class="setup-stage" id="setupStage" aria-label="出征场景预览"></div><div class="setup-options" id="setupOptions"></div></div>
+            <div class="setup-navigation"><button class="setup-nav-back" id="setupBackButton" type="button">← 上一步</button><div class="setup-nav-actions"><button class="setup-nav-next" id="setupNextButton" type="button">下一步 →</button><button class="primary-button" id="startGameButton" type="button" hidden>进入矿区 <span>→</span></button></div></div>
+          </div>
+          <div id="playShell" hidden>
+          <div class="game-stats">
+            <div class="stat-block score-block"><span class="stat-label"><span class="stat-dot gold"></span><span id="scoreLabel">可用金币</span></span><strong class="stat-value money" id="score">$0</strong></div>
+            <div class="stat-block goal-block">
+              <div class="goal-copy"><span class="stat-label">成绩目标</span><strong class="stat-value" id="goal">$650</strong></div>
+              <div class="goal-track" aria-hidden="true"><div id="goalProgress"></div></div>
+            </div>
+            <div class="level-badge"><span id="regionName">荒漠矿区 · 经典</span><strong>第 <b id="level">1</b> 关</strong></div>
+            <div class="stat-block timer-block" id="timerBlock">
+              <span class="stat-label"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="13" r="8" stroke="currentColor" stroke-width="1.8" /><path d="M12 9v4l2.5 1.5M9 3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>剩余时间</span>
+              <strong class="stat-value"><span id="time">60</span><small>秒</small></strong>
+            </div>
+          </div>
+
+          <div class="canvas-wrap" id="canvasWrap">
+            <canvas id="gameCanvas" width="1000" height="620" aria-label="矿区。空格或点击画面放钩，X 使用炸药，T 使用时光沙漏。"></canvas>
+            <div class="mine-sign" aria-hidden="true"><span class="sign-dot"></span><span class="sign-copy" id="mineSignText">GOLD CREEK · 1896</span></div>
+            <div class="emote-panel p1-emotes" id="p1Emotes" aria-label="P1 表情互动"><span>P1</span><button data-emote-player="0" data-emote="wave" type="button" title="挥手 (1)">👋</button><button data-emote-player="0" data-emote="point" type="button" title="指向宝物 (2)">👉</button><button data-emote-player="0" data-emote="like" type="button" title="点赞 (3)">👍</button></div>
+            <div class="emote-panel p2-emotes" id="p2Emotes" aria-label="P2 表情互动" hidden><span>P2</span><button data-emote-player="1" data-emote="wave" type="button" title="挥手 (7)">👋</button><button data-emote-player="1" data-emote="point" type="button" title="指向宝物 (8)">👉</button><button data-emote-player="1" data-emote="like" type="button" title="点赞 (9)">👍</button></div>
+            <div class="buff-display" id="buffDisplay" aria-label="本关生效道具"></div>
+            <div class="status-toast" id="statusToast" role="status"></div>
+            <div class="game-overlay" id="gameOverlay"></div>
+          </div>
+
+          <div class="game-controls">
+            <div class="play-controls" id="playControls">
+            <div class="item-legend" aria-label="矿物价值">
+              <span class="legend-title">矿物行情</span><span><i class="nugget-mini"></i>黄金 <b>$50–500</b></span><span><i class="diamond-mini"></i>钻石 <b>$600</b></span><span><i class="bag-mini">?</i>福袋 <b>随机惊喜</b></span>
+            </div>
+            <div class="control-actions" id="player1Controls">
+              <div class="player-control-label p1"><b>P1</b><span id="playerCoins">$0</span></div>
+              <button class="control-button dynamite-button" id="dynamiteButton" type="button" disabled><span class="button-icon" aria-hidden="true">🧨</span><span>炸掉重物 <small>库存 <b id="dynamiteCount">2</b></small></span><kbd>X</kbd></button>
+              <button class="control-button hourglass-button" id="hourglassButton" type="button" disabled><span class="button-icon" aria-hidden="true">⏳</span><span>增加时间 <small>库存 <b id="hourglassCount">0</b></small></span><kbd>T</kbd></button>
+              <button class="control-button drop-button" id="dropButton" type="button"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M7 16c-3 1-4 2-4 3 0 2 4 3 9 3s9-1 9-3c0-1-1-2-4-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><span id="dropButtonText">放下钩爪</span><kbd>S / SPACE</kbd></button>
+            </div>
+            <div class="control-actions player2-controls" id="player2Controls" hidden>
+              <div class="player-control-label p2"><b>P2</b><span id="playerCoins2">$0</span></div>
+              <button class="control-button dynamite-button" id="dynamiteButton2" type="button" disabled><span class="button-icon" aria-hidden="true">🧨</span><span>炸掉重物 <small>库存 <b id="dynamiteCount2">2</b></small></span><kbd>↑</kbd></button>
+              <button class="control-button hourglass-button" id="hourglassButton2" type="button" disabled><span class="button-icon" aria-hidden="true">⏳</span><span>增加时间 <small>库存 <b id="hourglassCount2">0</b></small></span><kbd>ENTER</kbd></button>
+              <button class="control-button drop-button player2-drop" id="dropButton2" type="button"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M7 16c-3 1-4 2-4 3 0 2 4 3 9 3s9-1 9-3c0-1-1-2-4-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><span id="dropButtonText2">放下钩爪</span><kbd>↓</kbd></button>
+            </div>
+            </div>
+          </div>
+          </div>
+        </section>
+        <div class="below-game"><p><span class="tip-spark">✦</span> 边角留空，矿物均位于可达区域。过关后逛商店，为下一关准备道具。</p><button id="pauseButton" type="button"><span id="pauseIcon">Ⅱ</span> <span id="pauseText">暂停游戏</span><kbd>P</kbd></button></div>
+      </main>
+      <footer><span>NO. 018 · GOLD CREEK MINING CO.</span><span>挖的是黄金，收获的是快乐。</span></footer>
+    </div>
+
+    <dialog class="help-dialog" id="helpDialog">
+      <button class="dialog-close" id="closeHelpButton" type="button" aria-label="关闭玩法说明">×</button>
+      <span class="eyebrow">MINER'S HANDBOOK</span><h2>矿工上手指南</h2><p class="dialog-intro">钩爪会自动左右摆动，找准角度，一钩暴富！</p>
+      <div class="help-steps">
+        <div><span>01</span><p><b>瞄准并放钩</b>单人按空格/S 或 ↓；双人时 P1 按 S/空格，P2 按 ↓，也可点击各自按钮。</p></div>
+        <div><span>02</span><p><b>达到目标金额</b>累计成绩达到目标即可过关；商店消费不会扣减成绩。</p></div>
+        <div><span>03</span><p><b>灵活使用道具</b>P1 按 X 炸药、T 沙漏；P2 按 ↑ 炸药、Enter 沙漏。沙漏增加共享时间。</p></div>
+        <div><span>04</span><p><b>关后逛商店</b>每次随机上架三件商品，一次性增益会在下一关生效。</p></div>
+        <div><span>05</span><p><b>角色与表情互动</b>开局可选择不同矿工。P1 按 1/2/3，P2 按 7/8/9 挥手、指向宝物、点赞。</p></div>
+      </div>
+      <div class="help-values">
+        <div><i class="nugget-mini"></i><span>黄金</span><b>$50 / 100 / 250 / 500</b></div><div><i class="diamond-mini"></i><span>钻石</span><b>$600 · 很轻</b></div><div><i class="rock-mini"></i><span>岩石</span><b>$20 · 很重</b></div><div><i class="bag-mini">?</i><span>神秘福袋</span><b>金币 / 炸药 / 时间</b></div><div><i class="classic-mini">🐷</i><span>钻石金猪</span><b>$700 · 来回移动</b></div><div><i class="classic-mini">🦴</i><span>古老骨骸</span><b>$15 · 障碍物</b></div><div><i class="classic-mini">🧨</i><span>TNT 炸药桶</span><b>会摧毁附近矿物</b></div>
+      </div>
+      <label class="motion-toggle"><input id="reduceMotion" type="checkbox" />减少角色动画与镜头震动</label>
+      <button class="dialog-primary" id="gotItButton" type="button">明白了，开挖！</button>
+    </dialog>
+    <div class="sr-only" id="liveRegion" aria-live="polite"></div>
+    <script type="module" src="/game.js"></script>
+  </body>
+</html>

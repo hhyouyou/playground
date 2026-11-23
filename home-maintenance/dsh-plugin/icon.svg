@@ -1,0 +1,13 @@
+<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M17.8 3.5C14.4 8.2 7.2 15.5 7.2 22.1A10.8 10.8 0 0 0 18 32.8a10.8 10.8 0 0 0 10.8-10.7c0-6.6-7.3-13.9-11-18.6Z" fill="url(#home-maintenance-drop)"/>
+  <rect x="12" y="16" width="16" height="14" rx="3.2" fill="#FFFFFF"/>
+  <path d="M16 14.8v3M24 14.8v3M12.5 21h15" stroke="#338F7B" stroke-width="1.8" stroke-linecap="round"/>
+  <rect x="16" y="24" width="3" height="2.5" rx=".8" fill="#77C5B0"/>
+  <rect x="21" y="24" width="3" height="2.5" rx=".8" fill="#E99078"/>
+  <defs>
+    <linearGradient id="home-maintenance-drop" x1="10" y1="7" x2="27" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8AD5C0"/>
+      <stop offset="1" stop-color="#2D8F7B"/>
+    </linearGradient>
+  </defs>
+</svg>

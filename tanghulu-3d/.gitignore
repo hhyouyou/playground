@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.tmp/
+.chrome-profile*/
+.edge-profile/
+chrome-*.log
+.DS_Store
